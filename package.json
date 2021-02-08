@@ -3,16 +3,20 @@
   "version": "0.0.1",
   "description": "The image optimization builder",
   "main": "index.js",
+  "builders": "builders.json",
   "devDependencies": {
     "@commitlint/cli": "9.1.2",
     "@commitlint/config-conventional": "9.1.2",
-    "husky": "4.2.5",
-    "prettier": "2.1.1",
-    "pretty-quick": "3.0.2",
+    "@types/fs-extra": "^9.0.6",
+    "@types/glob": "^7.1.3",
     "@types/jasmine": "~3.6.0",
     "@types/node": "^12.11.1",
+    "@types/sharp": "^0.27.1",
+    "husky": "4.2.5",
     "jasmine": "^3.6.3",
     "jasmine-node": "^3.0.0",
+    "prettier": "2.1.1",
+    "pretty-quick": "3.0.2",
     "standard-version": "^9.1.0",
     "ts-node": "~8.3.0",
     "typescript": "~4.0.2"
@@ -20,12 +24,17 @@
   "dependencies": {
     "@angular-devkit/architect": "0.1100.2",
     "@angular-devkit/core": "^11.0.7",
-    "@angular-devkit/schematics": "11.0.2"
+    "@angular-devkit/schematics": "11.0.2",
+    "fs-extra": "^9.1.0",
+    "glob": "^7.1.6",
+    "sharp": "^0.27.1"
   },
   "scripts": {
     "build": "tsc",
     "release": "standard-version --tag-prefix=",
-    "pretty": "prettier --write ."
+    "pretty": "prettier --write .",
+    "copy:schema": "copy .\\src\\schema.json dist\\schema.json",
+    "postbuild": "npm run copy:schema"
   },
   "husky": {
     "hooks": {

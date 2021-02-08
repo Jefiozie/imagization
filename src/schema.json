@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "id": "Schema",
+  "title": "schema",
+  "type": "object",
+  "properties": {
+    "quality": {
+      "type": "number",
+      "description": "The quality of the pictures.",
+      "default": 70
+    },
+    "max_width": {
+      "type": "number",
+      "description": "The max_width of a picture.",
+      "default": 1800
+    },
+    "folder": {
+      "type": "string",
+      "description": "The assets folder where the pictures are.",
+      "default": "./src/assets/"
+    },
+    "extensions": {
+      "type": "string",
+      "description": "A comma separated list of picture extensions.",
+      "default": "png,jpg,jpeg"
+    },
+    "additionalProperties": false
+  },
+  "required": []
+}
