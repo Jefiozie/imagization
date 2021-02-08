@@ -1,0 +1,37 @@
+{
+  "name": "imagization",
+  "version": "0.0.1",
+  "description": "The image optimization builder",
+  "main": "index.js",
+  "devDependencies": {
+    "@commitlint/cli": "9.1.2",
+    "@commitlint/config-conventional": "9.1.2",
+    "husky": "4.2.5",
+    "prettier": "2.1.1",
+    "pretty-quick": "3.0.2",
+    "@types/jasmine": "~3.6.0",
+    "@types/node": "^12.11.1",
+    "jasmine": "^3.6.3",
+    "jasmine-node": "^3.0.0",
+    "standard-version": "^9.1.0",
+    "ts-node": "~8.3.0",
+    "typescript": "~4.0.2"
+  },
+  "dependencies": {
+    "@angular-devkit/architect": "0.1100.2",
+    "@angular-devkit/core": "^11.0.7",
+    "@angular-devkit/schematics": "11.0.2"
+  },
+  "scripts": {
+    "build": "tsc",
+    "release": "standard-version --tag-prefix=",
+    "pretty": "prettier --write ."
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "author": "Jeffrey Bosch",
+  "license": "MIT"
+}
