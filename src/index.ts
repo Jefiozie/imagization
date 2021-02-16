@@ -9,10 +9,12 @@ import * as glob from 'glob';
 import * as sharp from 'sharp';
 import { Schema } from './schema';
 
-type BuilderSchema = Schema & JsonObject;
+// These are our input options defined
+// for type safety
+type InputOptions = Schema & JsonObject;
 
 export default createBuilder(
-  (options: BuilderSchema, context: BuilderContext) => {
+  (options: InputOptions, context: BuilderContext) => {
     context.logger.warn('Starting optimizations');
     return new Promise<BuilderOutput>(async (resolve, _reject) => {
       /**
@@ -29,6 +31,7 @@ export default createBuilder(
       const matches = glob.sync(lookupPattern);
 
       context.logger.info(`We found ${matches.length} matche(s)`);
+      
       // let's count all optimized images
       let optimizedImages = 0;
 
@@ -77,5 +80,5 @@ export default createBuilder(
       );
       return resolve({ success: true });
     });
-  },
+  }
 );
