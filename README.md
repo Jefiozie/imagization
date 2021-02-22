@@ -1,5 +1,9 @@
 # 🖼 Imagization 🖼
 
+<p align="center">
+  <img src="https://github.com/Jefiozie/imagization/blob/main/imagization.png?raw=true" alt="imagization" />
+</p>
+
 ---
 
 **❗❗ IMPORTANT ❗❗**
