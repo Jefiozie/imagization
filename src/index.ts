@@ -37,44 +37,56 @@ function execute(
 
     // let's count all optimized images
     let optimizedImages = 0;
+    try {
+      await Promise.all(
+        // go through all matches
+        matches.map(async (fileName) => {
+          const fileStream = sharp(fileName);
+          context.logger.debug(`[DEBUG]: match found ${fileName}`);
 
-    await Promise.all(
-      // go through all matches
-      matches.map(async (fileName) => {
-        const fileStream = sharp(fileName);
-        context.logger.debug(`[DEBUG]: match found ${fileName}`);
+          // Get the metadata from the fileStream
+          const metadata = await fileStream.metadata();
 
-        // Get the metadata from the fileStream
-        const metadata = await fileStream.metadata();
+          // when the width is smaller or equal to the max_width don't do anything
+          if (
+            metadata &&
+            metadata.width &&
+            metadata.width <= options.max_width
+          ) {
+            return;
+          }
 
-        // when the width is smaller or equal to the max_width don't do anything
-        if (metadata && metadata.width && metadata.width <= options.max_width) {
-          return;
-        }
+          // provide a temp name for the optimized picture
+          const optimizedName = fileName.replace(
+            /(\..+)$/,
+            (_match, ext) => `-optimized${ext}`,
+          );
 
-        // provide a temp name for the optimized picture
-        const optimizedName = fileName.replace(
-          /(\..+)$/,
-          (_match, ext) => `-optimized${ext}`,
-        );
+          // transform the image based on the options
+          await fileStream
+            .resize(options.max_width)
+            .jpeg({ quality: options.quality })
+            .toFile(`${optimizedName}`);
 
-        // transform the image based on the options
-        await fileStream
-          .resize(options.max_width)
-          .jpeg({ quality: options.quality })
-          .toFile(`${optimizedName}`);
+          // add one to our counter
+          ++optimizedImages;
 
-        // add one to our counter
-        ++optimizedImages;
+          context.logger.debug(`[DEBUG]: Renaming to: ${optimizedName}`);
 
-        context.logger.debug(`[DEBUG]: Renaming to: ${optimizedName}`);
+          // swap the optimized file with the original
+          return await fs.rename(optimizedName, fileName);
+        }),
+      );
 
-        // swap the optimized file with the original
-        return await fs.rename(optimizedName, fileName);
-      }),
-    );
+      context.logger.warn(
+        `Finished optimizations for ${optimizedImages} images`,
+      );
+    } catch (error) {
+      context.logger.error('Error when trying to imagization');
+      context.logger.error(error);
+      return { success: false };
+    }
 
-    context.logger.warn(`Finished optimizations for ${optimizedImages} images`);
     return resolve({ success: true });
   });
 }
