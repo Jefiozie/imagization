@@ -26,12 +26,12 @@ ng run [project-name]:optimize
 
 ## Builder options
 
-| Name   |      Description      |  Type |
-|----------|:-------------:|------:|
-| Quality | The quality of the pictures. | number  |
-| Max_width | The max width of a picture. | number  |
-| Folder | The assets folder where pictures are stored. | string  |
-| Extensions | A comma separated list of picture extensions. | string  |
+| Name       |                  Description                  |   Type |
+| ---------- | :-------------------------------------------: | -----: |
+| Quality    |         The quality of the pictures.          | number |
+| Max_width  |          The max width of a picture.          | number |
+| Folder     | The assets folder where pictures are stored.  | string |
+| Extensions | A comma separated list of picture extensions. | string |
 
 ## Author
 

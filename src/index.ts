@@ -13,72 +13,71 @@ import { Schema } from './schema';
 // for type safety
 type InputOptions = Schema & JsonObject;
 
-export default createBuilder(
-  (options: InputOptions, context: BuilderContext) => {
-    context.logger.warn('Starting optimizations');
-    return new Promise<BuilderOutput>(async (resolve, _reject) => {
-      /**
-       * Lookup the provided folder with the extensions
-       * The default values from the schema.json will be added if none is provided:
-       *  - folder will be: './src/assets/
-       *  - extensions will be: 'png,jpg,jpeg'
-       */
-      const lookupPattern = normalize(
-        `./${options.folder}**/*.{${options.extensions}}`,
-      );
+// function that will be executed by the builder
+function execute(
+  options: InputOptions,
+  context: BuilderContext,
+): Promise<BuilderOutput> {
+  context.logger.warn('Starting optimizations');
+  return new Promise<BuilderOutput>(async (resolve, _reject) => {
+    /**
+     * Lookup the provided folder with the extensions
+     * The default values from the schema.json will be added if none is provided:
+     *  - folder will be: './src/assets/
+     *  - extensions will be: 'png,jpg,jpeg'
+     */
+    const lookupPattern = normalize(
+      `./${options.folder}**/*.{${options.extensions}}`,
+    );
 
-      // lookup the files based on the lookupPattern
-      const matches = glob.sync(lookupPattern);
+    // lookup the files based on the lookupPattern
+    const matches = glob.sync(lookupPattern);
 
-      context.logger.info(`We found ${matches.length} matche(s)`);
-      
-      // let's count all optimized images
-      let optimizedImages = 0;
+    context.logger.info(`We found ${matches.length} matche(s)`);
 
-      await Promise.all(
-        // go through all matches
-        matches.map(async (fileName) => {
-          const fileStream = sharp(fileName);
-          context.logger.debug(`[DEBUG]: match found ${fileName}`);
+    // let's count all optimized images
+    let optimizedImages = 0;
 
-          // Get the metadata from the fileStream
-          const metadata = await fileStream.metadata();
+    await Promise.all(
+      // go through all matches
+      matches.map(async (fileName) => {
+        const fileStream = sharp(fileName);
+        context.logger.debug(`[DEBUG]: match found ${fileName}`);
 
-          // when the width is smaller or equal to the max_width don't do anything
-          if (
-            metadata &&
-            metadata.width &&
-            metadata.width <= options.max_width
-          ) {
-            return;
-          }
+        // Get the metadata from the fileStream
+        const metadata = await fileStream.metadata();
 
-          // provide a temp name for the optimized picture
-          const optimizedName = fileName.replace(
-            /(\..+)$/,
-            (_match, ext) => `-optimized${ext}`,
-          );
+        // when the width is smaller or equal to the max_width don't do anything
+        if (metadata && metadata.width && metadata.width <= options.max_width) {
+          return;
+        }
 
-          // transform the image based on the options
-          await fileStream
-            .resize(options.max_width)
-            .jpeg({ quality: options.quality })
-            .toFile(`${optimizedName}`);
+        // provide a temp name for the optimized picture
+        const optimizedName = fileName.replace(
+          /(\..+)$/,
+          (_match, ext) => `-optimized${ext}`,
+        );
 
-          // add one to our counter
-          ++optimizedImages;
+        // transform the image based on the options
+        await fileStream
+          .resize(options.max_width)
+          .jpeg({ quality: options.quality })
+          .toFile(`${optimizedName}`);
 
-          context.logger.debug(`[DEBUG]: Renaming to: ${optimizedName}`);
+        // add one to our counter
+        ++optimizedImages;
 
-          // swap the optimized file with the original
-          return await fs.rename(optimizedName, fileName);
-        }),
-      );
+        context.logger.debug(`[DEBUG]: Renaming to: ${optimizedName}`);
 
-      context.logger.warn(
-        `Finished optimizations for ${optimizedImages} images`,
-      );
-      return resolve({ success: true });
-    });
-  }
-);
+        // swap the optimized file with the original
+        return await fs.rename(optimizedName, fileName);
+      }),
+    );
+
+    context.logger.warn(`Finished optimizations for ${optimizedImages} images`);
+    return resolve({ success: true });
+  });
+}
+
+// Add the default createBuilder function
+export default createBuilder(execute);
