@@ -2,7 +2,11 @@
   "name": "imagization",
   "version": "0.0.1",
   "description": "The image optimization builder",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "files": [
+    "dist/*",
+    "builders.json"
+  ],
   "builders": "builders.json",
   "devDependencies": {
     "@commitlint/cli": "9.1.2",
@@ -31,14 +35,13 @@
   },
   "scripts": {
     "build": "tsc",
-    "release": "standard-version --tag-prefix=",
     "pretty": "prettier --write .",
-    "copy:schema": "copy .\\src\\schema.json dist\\schema.json",
+    "copy:schema": "cp ./src/schema.json dist/schema.json",
     "postbuild": "npm run copy:schema"
   },
   "husky": {
     "hooks": {
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+      "pre-commit": "pretty-quick --staged"
     }
   },
   "author": "Jeffrey Bosch",
